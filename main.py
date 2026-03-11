@@ -210,8 +210,11 @@ def show_next_profile(user_id):
 # ================= ОБРАБОТКА ЛАЙКОВ/ДИЗЛАЙКОВ =================
 
 
+
+@bot.callback_query_handler(func=lambda call: True)
 def handle_callback(call):
     user_id = call.message.chat.id
+    
     
     if call.data == "stop":
         bot.delete_message(chat_id=user_id, message_id=call.message.message_id)
@@ -251,4 +254,5 @@ def handle_callback(call):
 if __name__ == "__main__":
     logging.info("Бот запущен!")
     bot.infinity_polling(skip_pending=True)
+
 
