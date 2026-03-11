@@ -1,5 +1,4 @@
 pyTelegramBotAPI
 SQLAlchemy
 python-dotenv
-aiogram
 requests
