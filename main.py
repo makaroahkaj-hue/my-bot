@@ -251,3 +251,4 @@ def handle_callback(call):
 if __name__ == "__main__":
     logging.info("Бот запущен!")
     bot.infinity_polling(skip_pending=True)
+
