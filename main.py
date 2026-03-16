@@ -11,12 +11,12 @@ logging.basicConfig(
 )
 
 # ================= НАСТРОЙКИ =================
-TOKEN = os.getenv("TOKEN")  # перед запуском задай переменную окружения TOKEN
-
-if not TOKEN:
-    raise ValueError("Токен не найден. Задай переменную окружения TOKEN.")
+# Замени весь блок с TOKEN на этот:
+# Удаляй всё лишнее и оставляй только это:
+TOKEN = "8575627293:AAE7X620_Au7acTwPUa5pu8uOjzzOqM_grY"
 
 bot = telebot.TeleBot(TOKEN)
+
 
 # ================= "БАЗА ДАННЫХ" В ПАМЯТИ =================
 USERS = {}
@@ -389,28 +389,36 @@ def handle_callback(call):
 
     if action == "like":
         USERS[target_id]['likes'] += 1
-
-        # Проверяем взаимный лайк
+        
+        # 1. Проверяем, нет ли уже взаимного лайка (стандартная проверка)
         if (
-            target_id in INTERACTIONS
-            and user_id in INTERACTIONS[target_id]
+            target_id in INTERACTIONS 
+            and user_id in INTERACTIONS[target_id] 
             and INTERACTIONS[target_id][user_id] == "like"
         ):
+            # Если это уже взаимный лайк — отправляем контакты обоим
             user1 = USERS[user_id]
             user2 = USERS[target_id]
-            logging.info(f"МЕТЧ! Между {user_id} и {target_id}")
-
+            
+            bot.send_message(user_id, f"🎉 ВЗАИМНАЯ СИМПАТИЯ!\nНачинай общаться: {user2['username']}")
+            bot.send_message(target_id, f"🎉 ВЗАИМНАЯ СИМПАТИЯ!\nНачинай общаться: {user1['username']}")
+            
+        else:
+            # 2. Если взаимности еще нет, уведомляем целевого пользователя, что его лайкнули
+            u_liker = USERS[user_id] # Тот, кто поставил лайк
+            caption = f"Ты кому-то понравился! ❤️\n\n{u_liker['name']}, {u_liker['age']}, {u_liker['city']}\n{u_liker['desc']}"
+            
             try:
-                bot.send_message(
-                    user_id,
-                    f"🎉 ВЗАИМНАЯ СИМПАТИЯ!\nНачинай общаться: {user2['username']}"
-                )
-                bot.send_message(
-                    target_id,
-                    f"🎉 ВЗАИМНАЯ СИМПАТИЯ!\nНачинай общаться: {user1['username']}"
+                # Отправляем анкету лайкнувшего тому, кого лайкнули (target_id)
+                # Кнопки будут те же, так что target_id в кнопках будет ID лайкнувшего
+                bot.send_photo(
+                    target_id, 
+                    u_liker['photo'], 
+                    caption=caption, 
+                    reply_markup=get_reaction_keyboard(user_id)
                 )
             except Exception as e:
-                logging.error(f"Ошибка отправки метча: {e}")
+                logging.error(f"Не удалось отправить уведомление о лайке: {e}")
 
     elif action == "dislike":
         logging.info(f"Пользователь {user_id} дизлайкнул пользователя {target_id}")
@@ -432,5 +440,4 @@ def handle_callback(call):
 if __name__ == "__main__":
     logging.info("Бот запущен!")
     bot.infinity_polling(skip_pending=True)
-
 
