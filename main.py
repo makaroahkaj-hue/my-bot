@@ -13,7 +13,7 @@ logging.basicConfig(
 # ================= НАСТРОЙКИ =================
 # Замени весь блок с TOKEN на этот:
 # Удаляй всё лишнее и оставляй только это:
-TOKEN = "8575627293:AAE7X620_Au7acTwPUa5pu8uOjzzOqM_grY"
+TOKEN = "8503977875:AAEpoKf308aNhu5pF7q_-xYkUXh_B4EPiaw"
 
 bot = telebot.TeleBot(TOKEN)
 
